@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useStore } from "@/lib/store";
 import { TopBar } from "@/components/top-bar";
 import { InputPanel } from "@/components/input-panel/input-panel";
+import { GanttChart } from "@/components/gantt/gantt-chart";
 
 export default function Page() {
   const { hydrate, hydrated } = useStore();
@@ -19,7 +20,9 @@ export default function Page() {
         <aside className="glass rounded-2xl overflow-hidden">
           <InputPanel />
         </aside>
-        <section className="glass rounded-2xl overflow-hidden">Gantt chart (Task 13)</section>
+        <section className="glass rounded-2xl overflow-hidden">
+          <GanttChart />
+        </section>
         <aside className="glass rounded-2xl overflow-hidden">Right sidebar (Tasks 14–16)</aside>
       </main>
     </div>
