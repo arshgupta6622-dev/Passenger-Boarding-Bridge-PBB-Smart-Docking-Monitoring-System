@@ -5,6 +5,7 @@ import { useStore } from "@/lib/store";
 import { TopBar } from "@/components/top-bar";
 import { InputPanel } from "@/components/input-panel/input-panel";
 import { GanttChart } from "@/components/gantt/gantt-chart";
+import { RightPanel } from "@/components/right-panel";
 
 export default function Page() {
   const { hydrate, hydrated } = useStore();
@@ -23,7 +24,9 @@ export default function Page() {
         <section className="glass rounded-2xl overflow-hidden">
           <GanttChart />
         </section>
-        <aside className="glass rounded-2xl overflow-hidden">Right sidebar (Tasks 14–16)</aside>
+        <aside className="glass rounded-2xl overflow-hidden">
+          <RightPanel />
+        </aside>
       </main>
     </div>
   );
