@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useStore } from "@/lib/store";
 import { TopBar } from "@/components/top-bar";
+import { InputPanel } from "@/components/input-panel/input-panel";
 
 export default function Page() {
   const { hydrate, hydrated } = useStore();
@@ -15,7 +16,9 @@ export default function Page() {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
       <TopBar />
       <main className="grid h-[calc(100vh-4rem)] grid-cols-[320px_1fr_380px] gap-4 p-4">
-        <aside className="glass rounded-2xl overflow-hidden">Left sidebar (Task 11)</aside>
+        <aside className="glass rounded-2xl overflow-hidden">
+          <InputPanel />
+        </aside>
         <section className="glass rounded-2xl overflow-hidden">Gantt chart (Task 13)</section>
         <aside className="glass rounded-2xl overflow-hidden">Right sidebar (Tasks 14–16)</aside>
       </main>
