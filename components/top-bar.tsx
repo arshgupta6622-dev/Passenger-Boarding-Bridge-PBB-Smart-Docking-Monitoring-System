@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/lib/store";
 import { Moon, Plane, Play, RotateCcw, Sun } from "lucide-react";
@@ -9,6 +10,8 @@ import { motion } from "framer-motion";
 export function TopBar() {
   const { runScheduler, resetToSeed, result } = useStore();
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const utilisation = result ? Math.round(result.metrics.overallUtilisation * 100) : 0;
   const assigned = result?.metrics.assignedFlights ?? 0;
   const total = result?.metrics.totalFlights ?? 0;
@@ -42,8 +45,8 @@ export function TopBar() {
         <Button onClick={resetToSeed} variant="outline" size="icon" title="Reset to sample data">
           <RotateCcw className="h-4 w-4" />
         </Button>
-        <Button onClick={() => setTheme(theme === "dark" ? "light" : "dark")} variant="ghost" size="icon">
-          {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        <Button onClick={() => setTheme(theme === "dark" ? "light" : "dark")} variant="ghost" size="icon" suppressHydrationWarning>
+          {mounted ? (theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />) : <Sun className="h-4 w-4 opacity-0" />}
         </Button>
       </div>
     </header>

@@ -28,8 +28,10 @@ const FLIGHTS_SCHEMA = {
 const SYSTEM = `You convert messy airline timetables (CSV, pasted text, tables) into a clean array of flights for an airport gate scheduler.
 - Assume today's date for every timestamp.
 - Output ISO 8601 timestamps in local time.
+- arrival MUST be earlier than departure. When a row has two times with no labels, the smaller (earlier) one is arrival and the larger (later) one is departure.
+- Typical column order is: flightNumber, airline, origin, destination, arrival, departure, aircraft, pax.
 - Infer aircraft type from model or passenger count when the type is not explicit.
-- If a row is ambiguous, skip it rather than guessing.`;
+- If a row is ambiguous or missing required fields, skip it rather than guessing.`;
 
 export async function POST(req: NextRequest) {
   try {
