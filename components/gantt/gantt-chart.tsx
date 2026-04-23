@@ -24,7 +24,7 @@ export function GanttChart() {
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between border-b border-border/50 px-4 py-3">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Gate Timeline</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">PBB Docking Timeline</h2>
         {result && (
           <div className="flex items-center gap-2 text-xs">
             <Badge variant="secondary">{result.assignments.length} assigned</Badge>

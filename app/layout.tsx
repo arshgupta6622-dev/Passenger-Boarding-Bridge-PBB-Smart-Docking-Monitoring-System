@@ -7,8 +7,8 @@ import { Toaster } from "@/components/ui/sonner";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "Gate Scheduler",
-  description: "AI-assisted airport gate and jet-bridge assignment scheduler",
+  title: "PBB Smart Docking & Monitoring System",
+  description: "Passenger Boarding Bridge docking, monitoring, and turnaround optimisation system for airport gate operations.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

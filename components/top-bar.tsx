@@ -20,8 +20,8 @@ export function TopBar() {
           <Plane className="h-5 w-5 text-white" />
         </div>
         <div>
-          <h1 className="text-brand-gradient text-lg font-bold leading-tight">Gate Scheduler</h1>
-          <p className="text-[11px] text-muted-foreground leading-tight">AI-assisted gate & jet-bridge assignment</p>
+          <h1 className="text-brand-gradient text-lg font-bold leading-tight">PBB Smart Docking & Monitoring</h1>
+          <p className="text-[11px] text-muted-foreground leading-tight">Passenger Boarding Bridge · real-time monitoring & turnaround optimisation</p>
         </div>
       </div>
 
