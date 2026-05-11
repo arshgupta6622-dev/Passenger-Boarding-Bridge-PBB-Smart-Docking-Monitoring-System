@@ -21,6 +21,10 @@ interface StoreState {
   setGates: (gates: Gate[]) => void;
   runScheduler: () => void;
   applySwaps: (swaps: Swap[]) => void;
+  reassignFlight: (
+    flightId: string,
+    toGateId: string,
+  ) => { ok: boolean; reason?: string };
   resetToSeed: () => void;
 }
 
@@ -87,6 +91,52 @@ export const useStore = create<StoreState>((set, get) => ({
       previousResult: current,
       result: { ...newResult, assignments },
     });
+  },
+
+  reassignFlight: (flightId, toGateId) => {
+    const current = get().result;
+    if (!current) return { ok: false, reason: "Schedule not ready" };
+    const flight = get().flights.find((f) => f.id === flightId);
+    const gate = get().gates.find((g) => g.id === toGateId);
+    if (!flight || !gate) return { ok: false, reason: "Unknown flight or gate" };
+
+    if (!gate.compatibleTypes.includes(flight.aircraftType)) {
+      return {
+        ok: false,
+        reason: `${gate.name} can't accept ${flight.aircraftType}-body aircraft.`,
+      };
+    }
+
+    const start = new Date(flight.arrival).getTime();
+    const end = new Date(flight.departure).getTime();
+    const buffer = 15 * 60 * 1000;
+    const others = current.assignments.filter(
+      (a) => a.gateId === toGateId && a.flightId !== flightId,
+    );
+    for (const o of others) {
+      const oStart = new Date(o.start).getTime();
+      const oEnd = new Date(o.end).getTime();
+      if (start < oEnd + buffer && end + buffer > oStart) {
+        return {
+          ok: false,
+          reason: `${gate.name} is busy from ${o.start.slice(11, 16)}–${o.end.slice(11, 16)}.`,
+        };
+      }
+    }
+
+    const wasUnassigned = !current.assignments.some((a) => a.flightId === flightId);
+    const assignments = wasUnassigned
+      ? [...current.assignments, { flightId, gateId: toGateId, start: flight.arrival, end: flight.departure }]
+      : current.assignments.map((a) =>
+          a.flightId === flightId ? { ...a, gateId: toGateId } : a,
+        );
+    const unassigned = current.unassigned.filter((u) => u.flight.id !== flightId);
+
+    set({
+      previousResult: current,
+      result: { ...current, assignments, unassigned },
+    });
+    return { ok: true };
   },
 
   resetToSeed: () => {
