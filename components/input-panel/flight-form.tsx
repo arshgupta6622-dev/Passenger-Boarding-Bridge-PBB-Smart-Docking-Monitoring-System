@@ -28,7 +28,7 @@ interface Props {
 }
 
 export function FlightForm({ initial, onDone }: Props) {
-  const { addFlight } = useStore();
+  const { addFlight, gates } = useStore();
   const [flightNumber, setFlightNumber] = useState(initial?.flightNumber ?? "");
   const [airline, setAirline] = useState(initial?.airline ?? "");
   const [origin, setOrigin] = useState(initial?.origin ?? "");
@@ -51,7 +51,19 @@ export function FlightForm({ initial, onDone }: Props) {
       pax: pax ? Number(pax) : undefined,
     };
     addFlight(flight);
-    toast.success(`Added ${flight.flightNumber}`);
+    // Inspect the resulting schedule to give the user a precise outcome
+    const result = useStore.getState().result;
+    const assignment = result?.assignments.find((a) => a.flightId === flight.id);
+    if (assignment) {
+      const gate = gates.find((g) => g.id === assignment.gateId);
+      toast.success(`${flight.flightNumber} docked at ${gate?.name ?? assignment.gateId}`);
+    } else {
+      const reason = result?.unassigned.find((u) => u.flight.id === flight.id)?.reason
+        ?? "No compatible PBB available in that window.";
+      toast.warning(`${flight.flightNumber} couldn't be docked — check Conflicts tab`, {
+        description: reason,
+      });
+    }
     onDone?.();
     setFlightNumber(""); setOrigin(""); setDestination(""); setPax("");
   };

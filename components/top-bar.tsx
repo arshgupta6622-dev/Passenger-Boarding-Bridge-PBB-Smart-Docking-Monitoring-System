@@ -1,17 +1,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/lib/store";
-import { Moon, Plane, Play, RotateCcw, Sun } from "lucide-react";
+import { LogOut, Moon, Plane, Play, RotateCcw, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
 
 export function TopBar() {
+  const router = useRouter();
   const { runScheduler, resetToSeed, result } = useStore();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+
+  const logout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.replace("/login");
+    router.refresh();
+  };
   const utilisation = result ? Math.round(result.metrics.overallUtilisation * 100) : 0;
   const assigned = result?.metrics.assignedFlights ?? 0;
   const total = result?.metrics.totalFlights ?? 0;
@@ -47,6 +55,9 @@ export function TopBar() {
         </Button>
         <Button onClick={() => setTheme(theme === "dark" ? "light" : "dark")} variant="ghost" size="icon" suppressHydrationWarning>
           {mounted ? (theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />) : <Sun className="h-4 w-4 opacity-0" />}
+        </Button>
+        <Button onClick={logout} variant="ghost" size="icon" title="Sign out">
+          <LogOut className="h-4 w-4" />
         </Button>
       </div>
     </header>

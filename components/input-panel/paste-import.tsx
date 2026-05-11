@@ -25,7 +25,15 @@ export function PasteImport() {
       if (!res.ok) throw new Error(data.error ?? "AI error");
       const flight: Flight = { id: `f-${Date.now()}`, ...data.flight };
       addFlight(flight);
-      toast.success(`Added ${flight.flightNumber}`);
+      const result = useStore.getState().result;
+      const gates = useStore.getState().gates;
+      const a = result?.assignments.find((x) => x.flightId === flight.id);
+      if (a) {
+        const gate = gates.find((g) => g.id === a.gateId);
+        toast.success(`${flight.flightNumber} docked at ${gate?.name ?? a.gateId}`);
+      } else {
+        toast.warning(`${flight.flightNumber} couldn't be docked — check Conflicts tab`);
+      }
       setText("");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to parse");
@@ -49,7 +57,17 @@ export function PasteImport() {
       }));
       if (!flights.length) throw new Error("AI returned no flights");
       addFlights(flights);
-      toast.success(`Imported ${flights.length} flights`);
+      const result = useStore.getState().result;
+      const newIds = new Set(flights.map((f) => f.id));
+      const docked = result?.assignments.filter((a) => newIds.has(a.flightId)).length ?? 0;
+      const undocked = flights.length - docked;
+      if (undocked === 0) {
+        toast.success(`Imported ${flights.length} flights — all docked`);
+      } else {
+        toast.warning(`Imported ${flights.length} flights · ${docked} docked, ${undocked} unassigned`, {
+          description: "Open the Conflicts tab to see which couldn't fit.",
+        });
+      }
       setText("");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to import");
