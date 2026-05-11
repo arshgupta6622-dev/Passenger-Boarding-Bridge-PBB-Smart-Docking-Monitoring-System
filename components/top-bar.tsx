@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/lib/store";
-import { LogOut, Moon, Plane, Play, RotateCcw, Sun } from "lucide-react";
+import { LogOut, Moon, Plane, Play, Radio, RotateCcw, Sun } from "lucide-react";
+import { toast } from "sonner";
 import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
 
 export function TopBar() {
   const router = useRouter();
-  const { runScheduler, resetToSeed, result } = useStore();
+  const { runScheduler, resetToSeed, generateLiveDemo, result } = useStore();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -47,10 +48,23 @@ export function TopBar() {
           <div className="text-xl font-bold tabular-nums">{assigned}/{total}</div>
         </div>
 
+        <Button
+          onClick={() => {
+            generateLiveDemo();
+            toast.success("Live demo data loaded", {
+              description: "10 flights anchored around current time. Watch the NOW line cross active flights.",
+            });
+          }}
+          variant="outline"
+          className="border-rose-500/40 text-rose-500 hover:bg-rose-500/10 hover:text-rose-500"
+          title="Replace data with flights happening right now"
+        >
+          <Radio className="mr-2 h-4 w-4 animate-pulse" /> Live Demo
+        </Button>
         <Button onClick={runScheduler} className="brand-gradient text-white shadow-lg hover:opacity-90">
           <Play className="mr-2 h-4 w-4" /> Run Scheduler
         </Button>
-        <Button onClick={resetToSeed} variant="outline" size="icon" title="Reset to sample data">
+        <Button onClick={resetToSeed} variant="outline" size="icon" title="Reset to sample (full-day) data">
           <RotateCcw className="h-4 w-4" />
         </Button>
         <Button onClick={() => setTheme(theme === "dark" ? "light" : "dark")} variant="ghost" size="icon" suppressHydrationWarning>

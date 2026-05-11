@@ -26,6 +26,7 @@ interface StoreState {
     toGateId: string,
   ) => { ok: boolean; reason?: string };
   resetToSeed: () => void;
+  generateLiveDemo: () => void;
 }
 
 export const useStore = create<StoreState>((set, get) => ({
@@ -143,5 +144,37 @@ export const useStore = create<StoreState>((set, get) => ({
     storage.clear();
     const result = schedule(SEED_FLIGHTS, SEED_GATES);
     set({ flights: SEED_FLIGHTS, gates: SEED_GATES, result, previousResult: null });
+  },
+
+  generateLiveDemo: () => {
+    // Build flights anchored to the current moment so the NOW indicator
+    // crosses real activity. Offsets in minutes from now.
+    const now = new Date();
+    const at = (offsetMin: number) => {
+      const d = new Date(now.getTime() + offsetMin * 60 * 1000);
+      d.setSeconds(0, 0);
+      return d.toISOString();
+    };
+
+    const flights: Flight[] = [
+      // Already landed, currently boarding/turning around
+      { id: `live-${Date.now()}-1`, flightNumber: "6E 234", airline: "IndiGo", origin: "BOM", destination: "DEL", arrival: at(-90), departure: at(0), aircraftType: "narrow", pax: 180 },
+      { id: `live-${Date.now()}-2`, flightNumber: "EK 512", airline: "Emirates", origin: "DXB", destination: "DEL", arrival: at(-60), departure: at(90), aircraftType: "wide", pax: 380 },
+      { id: `live-${Date.now()}-3`, flightNumber: "AI 865", airline: "Air India", origin: "BLR", destination: "DEL", arrival: at(-30), departure: at(45), aircraftType: "narrow", pax: 160 },
+      // Arriving right around now
+      { id: `live-${Date.now()}-4`, flightNumber: "UK 995", airline: "Vistara", origin: "HYD", destination: "DEL", arrival: at(15), departure: at(105), aircraftType: "narrow", pax: 170 },
+      { id: `live-${Date.now()}-5`, flightNumber: "QR 578", airline: "Qatar Airways", origin: "DOH", destination: "DEL", arrival: at(30), departure: at(180), aircraftType: "wide", pax: 360 },
+      // Upcoming
+      { id: `live-${Date.now()}-6`, flightNumber: "SG 145", airline: "SpiceJet", origin: "MAA", destination: "DEL", arrival: at(60), departure: at(150), aircraftType: "narrow", pax: 189 },
+      { id: `live-${Date.now()}-7`, flightNumber: "AI 101", airline: "Air India", origin: "JFK", destination: "DEL", arrival: at(90), departure: at(240), aircraftType: "wide", pax: 340 },
+      { id: `live-${Date.now()}-8`, flightNumber: "LH 761", airline: "Lufthansa", origin: "FRA", destination: "DEL", arrival: at(120), departure: at(270), aircraftType: "wide", pax: 340 },
+      { id: `live-${Date.now()}-9`, flightNumber: "6E 512", airline: "IndiGo", origin: "CCU", destination: "DEL", arrival: at(150), departure: at(225), aircraftType: "narrow", pax: 180 },
+      { id: `live-${Date.now()}-10`, flightNumber: "SG 220", airline: "SpiceJet", origin: "IXR", destination: "DEL", arrival: at(180), departure: at(270), aircraftType: "regional", pax: 80 },
+    ];
+
+    storage.saveFlights(flights);
+    storage.saveGates(SEED_GATES);
+    const result = schedule(flights, SEED_GATES);
+    set({ flights, gates: SEED_GATES, result, previousResult: null });
   },
 }));
